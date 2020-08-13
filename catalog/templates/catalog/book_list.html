@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h2>Books</h2>
+    <ul>
+        {% for book in book_list  %}
+            <li>{{ book.title }}</li>
+            <li>{{ book.author }}</li>
+            <li>{{ book.summary }}</li>
+            <li>{{ book.isbn }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
