@@ -5,7 +5,7 @@ from catalog.models import Author, Genre, Book, BookInstance
 # Define the admin class
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name')
+    list_display = ("last_name", "first_name")
 
 
 # Register the Admin classes for Book using the decorator
