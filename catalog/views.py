@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView
 from catalog.models import Book, BookInstance, Author
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 # Views must return an HttpResponse, with or without template
@@ -10,6 +11,7 @@ def IndexView(request):
     return HttpResponse("<h1>Hello</h1>")
 
 
+@login_required
 def index(request):
     """View function for home page of site."""
 
