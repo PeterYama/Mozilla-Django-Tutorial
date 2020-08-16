@@ -1,7 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.urls import reverse  # Used to generate URLs by reversing the URL patterns
 import uuid  # Required for unique book instances
-
+from datetime import date
 
 class Author(models.Model):
     name = models.CharField(max_length=50)
@@ -9,10 +10,10 @@ class Author(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     date_of_birth = models.DateField(null=True, blank=True)
-    date_of_death = models.DateField('Died', null=True, blank=True)
+    date_of_death = models.DateField('died', null=True, blank=True)
 
     def get_absolute_url(self):
-        return reverse('author-detail', args=[str(self.id)])
+        return reverse('authors', args=[str(self.id)])
 
     def __str__(self):
         return f'{self.last_name}, {self.first_name}'
@@ -66,6 +67,13 @@ class Book(models.Model):
 class BookInstance(models.Model):
     """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
 
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    @property
+    def is_overdue(self):
+        if self.due_back and date.today() > self.due_back:
+            return True
+        return False
+
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -90,8 +98,11 @@ class BookInstance(models.Model):
         help_text="Book availability",
     )
 
+    # Manages who can edit this model 
     class Meta:
         ordering = ["due_back"]
+        # Permissions added here will appear under /admin/user/
+        permissions = (("can_mark_returned", "Set book as returned"),)   
 
     def __str__(self):
         """String for representing the Model object."""
