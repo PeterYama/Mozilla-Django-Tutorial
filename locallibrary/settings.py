@@ -19,6 +19,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # 3rd party apps
+    'rest_framework',
     # my apps
     'catalog',
     # django standard apps

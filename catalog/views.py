@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.apps import apps
 from django.forms import ModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import CreateView
@@ -15,6 +16,13 @@ from django import forms
 import datetime
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from rest_framework import viewsets
+from locallibrary.serializers import BookSerializer
+
+class BookViewSet(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
 
 class RenewBookModelForm(ModelForm):
     def clean_due_back(self):
