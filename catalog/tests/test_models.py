@@ -7,6 +7,7 @@ from catalog.views import RenewBookForm, AuthorDetailView
 
 # args are not named parameters, **kwargs are a list of Key : "value" parameters.
 
+
 class RenewBookFormTest(TestCase):
     def test_renew_form_date_field_label(self):
         form = RenewBookForm()

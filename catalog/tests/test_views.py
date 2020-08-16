@@ -8,6 +8,7 @@ import datetime
 import uuid
 from django.core.exceptions import ValidationError
 
+
 class LoanedBookInstancesByUserListViewTest(TestCase):
     def setUp(self):
         # Create two users
@@ -56,26 +57,27 @@ class LoanedBookInstancesByUserListViewTest(TestCase):
                 borrower=the_borrower,
                 status=status,
             )
-          # Create a BookInstance object for test_user1
+        # Create a BookInstance object for test_user1
         return_date = datetime.date.today() + datetime.timedelta(days=5)
 
         self.test_bookinstance1 = BookInstance.objects.create(
             book=test_book,
-            imprint='Unlikely Imprint, 2016',
+            imprint="Unlikely Imprint, 2016",
             due_back=return_date,
             borrower=test_user1,
-            status='o',
+            status="o",
         )
 
         # Create a BookInstance object for test_user2
         return_date = datetime.date.today() + datetime.timedelta(days=5)
         self.test_bookinstance2 = BookInstance.objects.create(
             book=test_book,
-            imprint='Unlikely Imprint, 2016',
+            imprint="Unlikely Imprint, 2016",
             due_back=return_date,
             borrower=test_user2,
-            status='o',
+            status="o",
         )
+
     def test_redirect_if_not_logged_in(self):
         response = self.client.get(
             reverse("renew-book-librarian", kwargs={"pk": self.test_bookinstance1.pk})
