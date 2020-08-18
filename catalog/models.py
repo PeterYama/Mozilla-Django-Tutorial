@@ -1,19 +1,86 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.urls import reverse  # Used to generate URLs by reversing the URL patterns
 import uuid  # Required for unique book instances
 from datetime import date
 
-# Adding an abstract user must be done in order, add the following line before running makemigrations/migrate
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, name=None, password=None):
+        if not email:
+            raise ValueError("User Must have an email")
+
+        user = self.model(email=self.normalize_email(email))
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, username, password):
+        user = self.create_user(
+            email=self.normalize_email(email), 
+            password=password)
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
+
+
+class Role(models.Model):
+
+    STUDENT = 1
+    TEACHER = 2
+    SECRETARY = 3
+    SUPERVISOR = 4
+    ADMIN = 5
+    ROLE_CHOICES = (
+        (STUDENT, "student"),
+        (TEACHER, "teacher"),
+        (SECRETARY, "secretary"),
+        (SUPERVISOR, "supervisor"),
+        (ADMIN, "admin"),
+    )
+
+    id = models.PositiveSmallIntegerField(
+        choices=ROLE_CHOICES, 
+        primary_key=True
+        )
+
+    def __str__(self):
+        return self.get_id_display()
+
+
+# Adding an abstract user must be done in order, 
+# add the following line before running makemigrations/migrate
 class User(AbstractUser):
-    is_student = models.BooleanField(default=False)
-    is_teacher = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
+    roles = models.ManyToManyField(Role)
 
 
-# Second step is to create a User Profile and link it to the actual Django UserModel
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+# Second step is to create a User Profile 
+# and link it to the actual Django UserModel
+class BuyerProfile(models.Model):
+    # Inherit roles from the abstract 
+    # model and add different fields
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, 
+        related_name="BuyerProfile"
+    )
+    wallet = models.IntegerField()
+    objects = UserManager()
+
+
+class SellerProfile(models.Model):
+    # Inherit roles from the abstract model and add different fields
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, 
+        related_name="SellerProfile"
+    )
+    inventoryCount = models.IntegerField()
+    objects = UserManager()
+
+    def __str__(self):
+        return self.name
+
+    def has_permission(self, perm, obj=None):
+        return self.is_staff
 
 
 class Author(models.Model):
@@ -37,7 +104,8 @@ class Genre(models.Model):
     """Model representing a book genre."""
 
     name = models.CharField(
-        max_length=200, help_text="Enter a book genre (e.g. Science Fiction)"
+        max_length=200, 
+        help_text="Enter a book genre (e.g. Science Fiction)"
     )
 
     def __str__(self):
@@ -50,8 +118,10 @@ class Book(models.Model):
 
     title = models.CharField(max_length=200)
 
-    # Foreign Key used because book can only have one author, but authors can have multiple books
-    # Author as a string rather than object because it hasn't been declared yet in the file
+    # Foreign Key used because book can only have one author, 
+    # but authors can have multiple books
+    # Author as a string rather than object 
+    # because it hasn't been declared yet in the file
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
 
     summary = models.TextField(
@@ -60,7 +130,8 @@ class Book(models.Model):
     isbn = models.CharField(
         "ISBN",
         max_length=13,
-        help_text='13 Character <a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>',
+        help_text='13 Character '
+        +'<a href="https://www.isbn-international.org/content/what-isbn">ISBN number</a>',
     )
 
     # ManyToManyField used because genre can contain many books. Books can cover many genres.
