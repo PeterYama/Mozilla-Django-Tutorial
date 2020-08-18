@@ -13,8 +13,14 @@ SECRET_KEY = '4u*!4ch7-z0eu001*@acl_yms85vuvj$et59u$67244*ag3c(q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+AUTH_USER_MODEL = 'catalog.User'
+
 ALLOWED_HOSTS = []
 
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
 
 # Application definition
 

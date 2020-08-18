@@ -1,13 +1,23 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.urls import reverse  # Used to generate URLs by reversing the URL patterns
 import uuid  # Required for unique book instances
 from datetime import date
 
+# Adding an abstract user must be done in order, add the following line before running makemigrations/migrate
+class User(AbstractUser):
+    is_student = models.BooleanField(default=False)
+    is_teacher = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+
+
+# Second step is to create a User Profile and link it to the actual Django UserModel
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+
 
 class Author(models.Model):
     name = models.CharField(max_length=50)
-
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     date_of_birth = models.DateField(null=True, blank=True)

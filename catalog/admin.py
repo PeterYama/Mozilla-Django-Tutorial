@@ -1,5 +1,5 @@
 from django.contrib import admin
-from catalog.models import Author, Genre, Book, BookInstance
+from catalog.models import Author, Genre, Book, BookInstance, User, UserProfile
 
 # adding a custom fields for the admin page
 # Define the admin class
@@ -29,3 +29,5 @@ class BookInstanceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Genre)
+admin.site.register(User)
+admin.site.register(UserProfile)
